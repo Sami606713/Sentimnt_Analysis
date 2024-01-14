@@ -5,9 +5,9 @@ import pickle as pkl
 import pickle as pkl
 import string as s
 from nltk.corpus import stopwords
-nltk.download("stopwords")
+# nltk.download("stopwords")
 from nltk.stem import PorterStemmer
-nltk.download("punkt")
+# nltk.download("punkt")
 from nltk.tokenize import word_tokenize
 
 import pandas as pd
@@ -15,10 +15,6 @@ import warnings
 from sklearn.exceptions import InconsistentVersionWarning
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
-# Connecting to mongodb
-# client = MongoClient("mongodb://localhost:27017")
-# db = client["Sentimentdb"]
-# collection = db["User_Sentiment"]
 
 
 port =PorterStemmer()
@@ -134,12 +130,6 @@ def home():
             sentiment_color = "green"
             sentiment_text = "Positive"
 
-        # Insert document
-        response_data = {
-        "user_input": user_input,
-        "predicted_sentiment": sentiment_text
-        }
-        collection.insert_one(response_data)
             
         # Display the sentiment with different colors
         if(sentiment_color=="green" and sentiment_text=="Positive"):
