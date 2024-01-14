@@ -5,8 +5,11 @@ import pickle as pkl
 import pickle as pkl
 import string as s
 from nltk.corpus import stopwords
+nltk.download("stopwords")
 from nltk.stem import PorterStemmer
+nltk.download("punkt")
 from nltk.tokenize import word_tokenize
+
 import pandas as pd
 import warnings
 from sklearn.exceptions import InconsistentVersionWarning
