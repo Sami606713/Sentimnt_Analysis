@@ -92,9 +92,15 @@ def home():
 
      # Display an image
     st.markdown(
-        f'<img src="https://source.unsplash.com/400x300/?movies" alt="Movies" style="height:250px; padding-left:100px;">',
-        unsafe_allow_html=True
-    )
+    f'<style>'
+    f'.responsive-image {{'
+    f'  width: 100%;'
+    f'  height: auto;'
+    f'}}'
+    f'</style>'
+    f'<img src="https://source.unsplash.com/400x300/?movies" alt="Movies" class="responsive-image">',
+    unsafe_allow_html=True
+)
     # Take a input
     st.markdown(
         f'<h4>would you like image or not enter your review in some line.</h4>',
