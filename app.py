@@ -4,6 +4,7 @@ import pickle as pkl
 # Load the model necessary library
 import pickle as pkl
 import string as s
+import nltk
 from nltk.corpus import stopwords
 nltk.download("stopwords")
 from nltk.stem import PorterStemmer
