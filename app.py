@@ -3,7 +3,6 @@ import pickle as pkl
 # from pymongo import MongoClient
 # Load the model necessary library
 import pickle as pkl
-import joblib
 import string as s
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -89,7 +88,7 @@ def load_model():
 # Home page
 def home():
     st.title("Sentiment Anlysis")
-    st.write("welome to our sentiment analysis page in this page you will privide a text either positive or negative our machine learning model will tell you your text is positive or negative or neutral.")
+    st.write("welome to our sentiment analysis page in this page you will privide a text either positive or negative our machine learning model will tell you your text is positive or negative or neutral.=> Develpor (Samiullah) ")
 
      # Display an image
     st.markdown(
