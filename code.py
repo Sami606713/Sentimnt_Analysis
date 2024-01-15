@@ -1,7 +1,9 @@
 # import libraries
+
 # !pip install --upgrade scikit-learn
 
 import pandas as pd
+import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -78,14 +80,16 @@ to_lower("sSAMi")
 
 
 import string as s
+
 def remove_poun(text):
-    new=""
-    for i in text:
-        if(i.isalnum()):
-            new+=i
+    new = ""
+    for char in text:
+        if char.isalnum():
+            new += char
         else:
-            new+=" "
+            new += ' '
     return new
+
 
 n="sami!$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ullah"
 remove_poun(n)
@@ -128,11 +132,12 @@ tokenize("samiullah is a good boy")
 
 # Now combne all the fun in a single fun
 def text_process(text):
+    # remove poun fun
+    text=remove_poun(text)
+    
     # To lower fun
     text=to_lower(text)
 
-    # remove poun fun
-    text=remove_poun(text)
   
     # remove stop word fun
     text=remove_stopword(text)
@@ -156,12 +161,6 @@ from sklearn.preprocessing import LabelEncoder
 encode=LabelEncoder()
 data["sentiment"]=encode.fit_transform(data["sentiment"])
 
-
-
-
-
-
-
 # Split the text
 
 from sklearn.model_selection import train_test_split
@@ -169,19 +168,57 @@ from sklearn.model_selection import train_test_split
 feature=data["review"]
 label=data['sentiment']
 
+feature_reshaped = np.array(feature).reshape(-1, 1)
+feature_reshaped
+
 label.head()
 
 data["sentiment"].value_counts()
 
-x_train,x_test,y_train,y_test=train_test_split(feature,label,test_size=0.2,random_state=42)
-
-x_train.shape
-
-y_train.shape
+# Aboove we see that the data is totally imbalance now we can balance them
 
 # Build a Pipeline
 
-from sklearn.pipeline import Pipeline
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.over_sampling import RandomOverSampler, SMOTE
+from imblearn.pipeline import Pipeline
+from collections import Counter
+
+# Create a dictionary for RandomUnderSampler
+under_sampling_strategy = {class_label: int(0.5 * count) for class_label, count in Counter(label).items()}
+
+under_sampling_strategy
+
+resampling_pipeline = Pipeline([
+    ('under', RandomUnderSampler(sampling_strategy=under_sampling_strategy)),  # Downsampling majority class
+    ('over', RandomOverSampler(sampling_strategy='auto')),  # Upsampling minority classes
+])
+
+x_resampled, y_resampled = resampling_pipeline.fit_resample(feature_reshaped, label)
+
+x_train,x_test,y_train,y_test=train_test_split(x_resampled,y_resampled,test_size=0.2,random_state=42)
+
+
+
+x_train.shape
+
+x_train.shape
+
+x_test.shape
+
+y_test.shape
+
+y_train[y_train==2].value_counts()
+
+y_train[y_train==1].value_counts()
+
+y_train[y_train==0].value_counts()
+
+y_test.shape
+
+# Now the data is balance now we perform next step
+
+# from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -211,13 +248,6 @@ pipe3 = Pipeline([
     ('classifier', SVC())
 ])
 
-# Random Forest
-
-pipe_random = Pipeline([
-    ('vectorizer', CountVectorizer(preprocessor=text_process,max_features=1000)),
-    ('classifier', RandomForestClassifier())
-])
-
 
 
 pipeline.fit(x_train,y_train)
@@ -228,19 +258,13 @@ pipe2.fit(x_train, y_train)
 
 pipe3.fit(x_train, y_train)
 
-# pipe_random.fit(x_train, y_train)
-
-
-
-
-
-# naivebase
+# # naivebase
 pre=pipeline.predict(x_test)
 
-# Logistic Regression
+# # Logistic Regression
 pred=pipe2.predict(x_test)
 
-# SVC
+# # SVC
 svc_pred=pipe3.predict(x_test)
 
 # Accuracy
@@ -264,9 +288,14 @@ print("svc Accuracy: ",svc_acc)
 
 from sklearn.model_selection import cross_val_score
 
-# cv=cross_val_score(pipeline,x_train,y_train,cv=10)
+cv=cross_val_score(pipeline,x_train,y_train,cv=10)
 
-# cv.mean()
+cv.mean()
+
+# cv2=cross_val_score(pipe2,x_train,y_train,cv=10)
+# cv3=cross_val_score(pipe3,x_train,y_train,cv=10)
+
+# print(cv2.mean(),cv3.mean())
 
 # Pickle the model
 
@@ -276,28 +305,36 @@ with open("Sentiment_analysis.pkl", "wb") as f:
 
 
 
+# import joblib
+
+# # Save object
+# joblib.dump(pipe3, "Sentiment_analysis.pkl")
+
 # Load the model
 
 with open("Sentiment_analysis.pkl","rb") as f:
     m=pkl.load(f)
+
 
 # test on some text
 
 s="you are a very slow The service was slow, the food was bland, and the overall atmosphere was disappointing."
 m.predict([s])
 
-new="I absolutely loved the new movie! The storyline was captivating, the acting was superb, and the cinematography was breathtaking."
+
+new="As the relentless storm clouds gathered overhead, a palpable sense of foreboding enveloped the once serene landscape. The biting winds carried with them the stench of impending doom, and the heavens unleashed torrents of rain, washing away any semblance of tranquility. Each raindrop seemed to echo the mournful dirge of shattered dreams. The world, once vibrant with promise, now appeared draped in a shroud of desolation. Every step forward felt like an arduous journey through a murky swamp of despair, the ground sinking beneath the weight of unmet expectations. The skeletal remains of wilted flowers mirrored the decay of optimism, and the air was thick with the acrid taste of bitter disappointment. In this disheartening tableau, the once bright horizon now loomed ominously, casting a shadow that seemed to swallow the very essence of hope."
+
 m.predict([new])
 
-n="The restaurant experience was terrible. The service was slow, the food was bland, and the overall atmosphere was disappointing."
+n="The sun dipped below the horizon, casting long shadows across the quiet town. A gentle breeze rustled through the leaves, and the distant hum of crickets filled the evening air. The scent of blooming flowers mingled with the earthy aroma of damp soil, creating a serene ambiance. Streetlights flickered to life, casting a warm glow on the cobblestone streets. In this tranquil moment, time seemed to slow, and the world embraced a peaceful stillness."
 
 m.predict([n])
 
-d="The seminar covered various topics related to the industry and industry area are very dirty. The speakers presented their findings, and attendees had the opportunity to ask questions during the Q&A session."
+d="In the heart of the metropolis, neon lights painted the night in a kaleidoscope of colors. The vibrant nightlife unfolded, with laughter and music echoing through the streets. Each corner held a story, and the city's pulse quickened as it embraced the diversity of its nocturnal inhabitants."
 
 m.predict([d])
 
-s="you are a very slow The service was slow, the food was bland, and the overall atmosphere was disappointing."
+s="The movie was a complete letdown. The plot was confusing, the characters were poorly developed, and I left the theater feeling thoroughly disappointed."
 
 m.predict([s])
 

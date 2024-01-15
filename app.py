@@ -12,29 +12,32 @@ nltk.download("punkt")
 from nltk.tokenize import word_tokenize
 
 import pandas as pd
+import numpy as np
 import warnings
-from sklearn.exceptions import InconsistentVersionWarning
-warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+warnings.filterwarnings("ignore")
 
-
-
-port =PorterStemmer()
-
-# Convert to lower case
 def to_lower(text):
     return text.lower()
 
 # Remove pouncation
+
+
+
+import string as s
+
 def remove_poun(text):
-    new=""
-    for i in text:
-        if(i.isalnum()):
-            new+=i
+    new = ""
+    for char in text:
+        if char.isalnum():
+            new += char
         else:
-            new+=" "
+            new += ' '
     return new
 
-# remove stop words
+
+# Remove Stopword
+
+from nltk.corpus import stopwords
 def remove_stopword(text):
     stopword=set(stopwords.words("english"))
     
@@ -42,20 +45,39 @@ def remove_stopword(text):
     
     return " ".join(new_text)
 
-# Stem
+remove_stopword("i am a a biy a snf i ama a good bot")
+
+# Stem the word
+
+from nltk.stem import PorterStemmer
+
+port =PorterStemmer()
+
+
+
 def stem(text):
     return port.stem(text)
 
-# Tokenize 
+
+
+# Tokenize the word
+
+from nltk.tokenize import word_tokenize
+
 def tokenize(text):
     return word_tokenize(text)
+
+
+# Now all the fun in a single fun
+
 # Now combne all the fun in a single fun
 def text_process(text):
+    # remove poun fun
+    text=remove_poun(text)
+    
     # To lower fun
     text=to_lower(text)
 
-    # remove poun fun
-    text=remove_poun(text)
   
     # remove stop word fun
     text=remove_stopword(text)
@@ -67,6 +89,7 @@ def text_process(text):
     final=tokenize(text)
     
     return " ".join(final)
+
 
 
 def full_process(text):
